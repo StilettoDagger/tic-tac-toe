@@ -19,7 +19,6 @@ const GameBoard = () => {
 
     // Display the cell contents on the DOM if its data has been changed
     const updateCell = (cell, symbol) => {
-        // TODO: implement the updateCell function
         if (cell.classList.contains("active"))
         {
             return;
@@ -36,7 +35,6 @@ const GameBoard = () => {
     }
 
     const fillCell = (cell, move) => {
-        // TODO: implement the fillCell function
         const rowIndex = move.row - 1;
         const colIndex = move.col - 1;        
 
@@ -48,6 +46,10 @@ const GameBoard = () => {
         
 
         updateCell(cell, symbol);
+    }
+
+    const checkWinner = () => {
+        // TODO: Add win condition logic implementation
     }
 
     return {createBoard, fillCell};
