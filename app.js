@@ -2,8 +2,6 @@ const GameBoard = () => {
     const gameBoard = [];
     const boardContainer = document.getElementById("board");
 
-    let cells;
-
     // Create a 3x3 2D array initially filled with null values and add the cells to the DOM
     const createBoard = () => {
         for (let i = 0; i < 3; i++) {
@@ -17,21 +15,18 @@ const GameBoard = () => {
                 boardContainer.appendChild(cell);
             }
         }
-        cells = document.querySelectorAll(".cell");
     }
 
-    const getBoard = () => console.log(gameBoard);
-
-    // Display the 
-    const updateCells = () => {
-        // TODO: implement the updateCells function
+    // Display the cell contents on the DOM if its data has been changed
+    const updateCell = (row, col) => {
+        // TODO: implement the updateCell function
     }
 
-    const fillCell = (cellData) => {
+    const fillCell = (move) => {
         // TODO: implement the fillCell function
     }
 
-    return {createBoard, getBoard, fillCell};
+    return {createBoard, fillCell};
 };
 
 const Player = (name, symbol) => {
@@ -46,6 +41,37 @@ const Player = (name, symbol) => {
     return {addScore, playMove};
 }
 
-const board = GameBoard();
+const gameManager = (() => {
+    
+    const SYMBOLS = ["X", "O"];
+    const board = GameBoard();
+    const firstPlayer = Player("Player 1", "X");
+    const secondPlayer = Player("Player 2", "O");
 
-board.createBoard();
+    const startGame = () => {
+        board.createBoard();
+
+        bindEventsToCells(document.querySelectorAll(".cell"));
+    }
+
+    const bindEventsToCells = (cells) => {
+        cells.forEach(cell => {
+            cell.addEventListener("click", checkMove);
+        });
+    }
+
+    const checkMove = (event) => {
+        const cellEl = event.target;
+
+        const col = +cellEl.getAttribute("data-col");
+        const row = +cellEl.getAttribute("data-row");
+
+        const move = firstPlayer.playMove(row, col);
+        console.log(move);
+        
+    }
+
+    return {startGame};
+})();
+
+gameManager.startGame();
