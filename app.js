@@ -2,23 +2,29 @@ const GameBoard = () => {
     const gameBoard = [];
     const boardContainer = document.getElementById("board");
 
-    // Create a 3x3 2D array initially filled with null values
+    let cells;
+
+    // Create a 3x3 2D array initially filled with null values and add the cells to the DOM
     const createBoard = () => {
         for (let i = 0; i < 3; i++) {
             gameBoard.push([]);
             for (let j = 0; j < 3 ; j++) {
                 gameBoard[i].push(null);
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+                cell.setAttribute("data-row", i + 1);
+                cell.setAttribute("data-col", j + 1);
+                boardContainer.appendChild(cell);
             }
-            
         }
-        renderBoard();
+        cells = document.querySelectorAll(".cell");
     }
 
     const getBoard = () => console.log(gameBoard);
 
-    // Draw the board and display it on the DOM
-    const renderBoard = () => {
-        // TODO: implement the renderBoard function
+    // Display the 
+    const updateCells = () => {
+        // TODO: implement the updateCells function
     }
 
     const fillCell = (cellData) => {
@@ -40,3 +46,6 @@ const Player = (name, symbol) => {
     return {addScore, playMove};
 }
 
+const board = GameBoard();
+
+board.createBoard();
