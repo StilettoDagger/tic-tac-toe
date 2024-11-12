@@ -1,5 +1,6 @@
-const board = (() => {
+const GameBoard = () => {
     const gameBoard = [];
+    const boardContainer = document.getElementById("board");
 
     // Create a 3x3 2D array initially filled with null values
     const createBoard = () => {
@@ -10,16 +11,32 @@ const board = (() => {
             }
             
         }
+        renderBoard();
     }
 
     const getBoard = () => console.log(gameBoard);
 
     // Draw the board and display it on the DOM
     const renderBoard = () => {
-        // TODO: implement the drawBoard function
+        // TODO: implement the renderBoard function
     }
 
-    return {createBoard, getBoard, renderBoard};
-})();
+    const fillCell = (cellData) => {
+        // TODO: implement the fillCell function
+    }
 
-board.createBoard();
+    return {createBoard, getBoard, fillCell};
+};
+
+const Player = (name, symbol) => {
+    const playerName = name;
+    const playerSymbol = symbol;
+
+    let playerScore = 0;
+
+    const addScore = () => ++playerScore;
+    const playMove = (row, col) => ({playerName, playerSymbol, row, col});
+
+    return {addScore, playMove};
+}
+
