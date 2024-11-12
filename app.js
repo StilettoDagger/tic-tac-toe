@@ -18,12 +18,36 @@ const GameBoard = () => {
     }
 
     // Display the cell contents on the DOM if its data has been changed
-    const updateCell = (row, col) => {
+    const updateCell = (cell, symbol) => {
         // TODO: implement the updateCell function
+        if (cell.classList.contains("active"))
+        {
+            return;
+        }
+
+        else if (symbol === "X")
+        {
+            cell.classList.add("active", "red");
+        }
+        else if (symbol === "O")
+        {
+            cell.classList.add("active", "green")
+        }
     }
 
-    const fillCell = (move) => {
+    const fillCell = (cell, move) => {
         // TODO: implement the fillCell function
+        const rowIndex = move.row - 1;
+        const colIndex = move.col - 1;        
+
+        const symbol = move.playerSymbol;
+
+        gameBoard[rowIndex][colIndex] = move;
+
+        console.log(gameBoard);
+        
+
+        updateCell(cell, symbol);
     }
 
     return {createBoard, fillCell};
@@ -47,6 +71,7 @@ const gameManager = (() => {
     const board = GameBoard();
     const firstPlayer = Player("Player 1", "X");
     const secondPlayer = Player("Player 2", "O");
+    let isPlayerTurn = true;
 
     const startGame = () => {
         board.createBoard();
@@ -68,7 +93,7 @@ const gameManager = (() => {
 
         const move = firstPlayer.playMove(row, col);
         console.log(move);
-        
+        board.fillCell(cellEl, move);
     }
 
     return {startGame};
