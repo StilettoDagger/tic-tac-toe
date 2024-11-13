@@ -6,13 +6,16 @@ const GameBoard = () => {
 	const createBoard = () => {
 		for (let i = 0; i < 3; i++) {
 			gameBoard.push([]);
+			const newRow = document.createElement("div");
+			newRow.classList.add("row");
+			boardContainer.appendChild(newRow);
 			for (let j = 0; j < 3; j++) {
 				gameBoard[i].push(null);
 				const cell = document.createElement("div");
 				cell.classList.add("cell");
 				cell.setAttribute("data-row", i + 1);
 				cell.setAttribute("data-col", j + 1);
-				boardContainer.appendChild(cell);
+				newRow.appendChild(cell);
 			}
 		}
 	};
