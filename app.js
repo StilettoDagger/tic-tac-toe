@@ -25,7 +25,7 @@ const GameBoard = () => {
         if (symbol === "X") {
 			cell.classList.add("active", "red");
 		} else if (symbol === "O") {
-			cell.classList.add("active", "green");
+			cell.classList.add("active", "blue");
 		}
 	};
 
@@ -42,7 +42,22 @@ const GameBoard = () => {
         return winner;
 	};
 
+	const checkFilledBoard = () => {
+		for (let i = 0; i < 3; i++)
+		{
+			for (let j = 0; j < 3; j++)
+			{
+				if (gameBoard[i][j] === null)
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	const checkWinner = () => {
+		const isFilled = checkFilledBoard();
 		for (let i = 0; i < 3; i++) {
 			// Check for row matches
 			if (gameBoard[i][0] && gameBoard[i][1] && gameBoard[i][2]) {
@@ -90,6 +105,11 @@ const GameBoard = () => {
 				return gameBoard[1][1].playerName;
 			}
         }
+		// If the game board is filled out but there are no winners, return a tie
+		if (isFilled)
+		{
+			return "tie";
+		}
 		return;
 	};
 
@@ -111,13 +131,30 @@ const Player = (name, symbol) => {
 const gameManager = (() => {
 	const SYMBOLS = ["X", "O"];
 	const board = GameBoard();
-	const firstPlayer = Player("Player 1", "X");
-	const secondPlayer = Player("Player 2", "O");
-	let isPlayerTurn = true;
+	let firstPlayer;
+	let secondPlayer;
+	let firstPlayerSymbol;
+	let secondPlayerSymbol;
+	const turnInfo = document.querySelector(".turn-info");
+	const currentTurnInfo = document.querySelector(".current-turn");
+	const resultInfo = document.querySelector(".result");
+	const playerInfo = document.querySelector(".player-info");
+	let isPlayerTurn = Math.random() > 0.5 ? true: false;
     let cells;
 
 	const startGame = () => {
 		board.createBoard();
+
+		pickRandomSymbols();
+
+		firstPlayer = Player("Player 1", firstPlayerSymbol);
+		secondPlayer = Player("Player 2", secondPlayerSymbol);
+
+		turnInfo.classList.remove("hidden");
+		playerInfo.classList.remove("hidden");
+		resultInfo.classList.add("hidden");
+
+		showCurrentTurn();
 
         cells = document.querySelectorAll(".cell");
 		bindEventsToCells(cells);
@@ -145,12 +182,64 @@ const gameManager = (() => {
 
 		const move = isPlayerTurn ? firstPlayer.playMove(row, col) : secondPlayer.playMove(row, col);
         isPlayerTurn = !isPlayerTurn;
+		showCurrentTurn();
 		const winner = board.fillCell(cellEl, move);
-        if (winner) {
-            unbindCells(cells);
-            console.log(winner);
-        }
-        
+		checkGameOver(winner);
+	};
+
+	const checkGameOver = (winner) => {
+		if (winner)
+		{
+			console.log(winner);
+			
+			unbindCells(cells);
+			turnInfo.classList.add("hidden");
+			playerInfo.classList.add("hidden");
+			resultInfo.classList.remove("hidden");
+
+			if (winner === "Player 1")
+			{
+				resultInfo.classList.add("win");
+				resultInfo.textContent = "You have won!";
+			}
+			else if (winner === "Player 2")
+			{
+				resultInfo.classList.add("loss");
+				resultInfo.textContent = "You have lost!"
+			}
+			else if (winner === "tie")
+			{
+				resultInfo.classList.add("tie");
+				resultInfo.textContent = "It's a tie!"
+			}
+		}
+	}
+
+	const pickRandomSymbols = () => {
+		if (Math.random() > 0.5)
+		{
+			firstPlayerSymbol = SYMBOLS[0];
+			secondPlayerSymbol = SYMBOLS[1];
+		}
+		else {
+			firstPlayerSymbol = SYMBOLS[1];
+			secondPlayerSymbol = SYMBOLS[0];
+		}
+
+		const symbolInfo = playerInfo.querySelector(".symbol");
+		const symbolClass = firstPlayerSymbol === "X" ? "red" : "blue";
+		symbolInfo.classList.add(symbolClass);
+		symbolInfo.textContent = firstPlayerSymbol;
+	};
+
+	const showCurrentTurn = () => {
+		if (isPlayerTurn)
+		{
+			currentTurnInfo.textContent = "your turn";
+		}
+		else {
+			currentTurnInfo.textContent = "your opponent's turn";
+		}
 	};
 
 	return { startGame };
