@@ -1,8 +1,16 @@
+/**
+ * Creates a GameBoard object that has methods to create a Tic Tac Toe game board 
+ * and can store, update, render, and reset cell data.
+ * @returns A GameBoard object with the methods createBoard, fillCell, and resetBoard.
+ */
 const GameBoard = () => {
 	const gameBoard = [];
 	const boardContainer = document.getElementById("board");
 
-	// Create a 3x3 2D array initially filled with null values and add the cells to the DOM
+	/**
+	 * Create a 3x3 2D array initially filled with null values 
+	 * and add the cells to the DOM.
+	 */
 	const createBoard = () => {
 		boardContainer.classList.remove("hidden");
 		for (let i = 0; i < 3; i++) {
@@ -21,7 +29,12 @@ const GameBoard = () => {
 		}
 	};
 
-	// Display the cell contents on the DOM if its data has been changed
+	/**
+	 * Display the cell contents on the DOM if its data has been changed
+	 * given the passed symbol value.
+	 * @param {Node} cell - The target cell element to be filled.
+	 * @param {string} symbol - The type of symbol that will fill the target cell ("either 'X' or 'O").
+	 */
 	const updateCell = (cell, symbol) => {
         if (symbol === "X") {
 			cell.classList.add("active", "red");
@@ -30,6 +43,13 @@ const GameBoard = () => {
 		}
 	};
 
+	/**
+	 * Fills a specific cell in the gameBoard array with a move object 
+	 * given the row and column properties of the passed move object.
+	 * @param {Node} cell - The target cell element to be filled.
+	 * @param {Object} move - The move object that will be filled in the gameBoard array.
+	 * @returns The winner if a match has been found on the board.
+	 */
 	const fillCell = (cell, move) => {
 		const rowIndex = move.row - 1;
 		const colIndex = move.col - 1;
@@ -43,6 +63,10 @@ const GameBoard = () => {
         return winner;
 	};
 
+	/**
+	 * Check if all the board cells are completely filled out.
+	 * @returns true if the board is full and false if not.
+	 */
 	const checkFilledBoard = () => {
 		for (let i = 0; i < 3; i++)
 		{
@@ -57,6 +81,13 @@ const GameBoard = () => {
 		return true;
 	}
 
+	/**
+	 * Looks for any valid matches (row, column, or diagonal), 
+	 * and returns a winner if a match has been found.
+	 * @returns The winner's player name if a match has been found,
+	 * a "tie" if the board is filled out with no matches,
+	 * and "undefined" otherwise.
+	 */
 	const checkWinner = () => {
 		const isFilled = checkFilledBoard();
 		for (let i = 0; i < 3; i++) {
@@ -110,6 +141,10 @@ const GameBoard = () => {
 		return;
 	};
 
+	/**
+	 * Clears all cell data on the DOM by removing any active classes 
+	 * that are associated with the cell elements.
+	 */
 	const clearDOMCells = () => {
 		const cells = document.querySelectorAll(".cell");
 
@@ -118,6 +153,10 @@ const GameBoard = () => {
 		})
 	};
 
+	/**
+	 * Clear the gameBoard array by setting the value of all elements 
+	 * in the gameBoard element to null.
+	 */
 	const clearBoardData = () => {
 		for (let i = 0; i < 3; i++)
 		{
@@ -136,6 +175,12 @@ const GameBoard = () => {
 	return { createBoard, fillCell, resetBoard };
 };
 
+/**
+ * 
+ * @param {string} name - The name of the player to be added.
+ * @param {string} symbol - The symbol type that the player will play with (either 'X' or 'O').
+ * @returns a Player object with addScore and playMove methods.
+ */
 const Player = (name, symbol) => {
 	const playerName = name;
 	const playerSymbol = symbol;
@@ -148,6 +193,11 @@ const Player = (name, symbol) => {
 	return { addScore, playMove };
 };
 
+/**
+ * Create an Immediately Invoked Function Expression (IIFE) object 
+ * that is responsible for starting the game and keeping track of turns, 
+ * and whether or not the game is over.
+ */
 const gameManager = (() => {
 	const SYMBOLS = ["X", "O"];
 	const board = GameBoard();
@@ -164,6 +214,9 @@ const gameManager = (() => {
 	let isGameOver = false;
 	let isRendered = false;
 	
+	/**
+	 * Logic for initializing the game.
+	 */
 	const initGame = () => {
 		pickRandomSymbols();
 		
@@ -179,6 +232,9 @@ const gameManager = (() => {
 		showCurrentTurn();
 	}
 
+	/**
+	 * Event handler function for starting and initializing the game. 
+	 */
 	const startGame = (e) => {
 		e.target.textContent = "Reset Game";
 		e.target.classList.replace("start", "reset");
@@ -203,6 +259,10 @@ const gameManager = (() => {
         })
     }
 
+	/**
+	 * Event handler function for making a move by clicking on a cell, 
+	 * and checking for a win condition.
+	 */
 	const checkMove = (event) => {
 		const cellEl = event.target;
 
@@ -218,6 +278,10 @@ const gameManager = (() => {
 		checkGameOver(winner);
 	};
 
+	/**
+	 * Checks if a winner has been declared and update the display to show the winner.
+	 * @param {string} winner 
+	 */
 	const checkGameOver = (winner) => {
 		if (winner)
 		{
@@ -273,6 +337,9 @@ const gameManager = (() => {
 		}
 	};
 
+	/**
+	 * Event handler function for resetting the game.
+	 */
 	const resetGame = (e) => {
 		
 		if (isGameOver)
@@ -284,7 +351,10 @@ const gameManager = (() => {
 		initGame();
 	}
 
-	const renderUI = () => {
+	/**
+	 * Render the start button that will start the game on the screen.
+	 */
+	const renderStart = () => {
 		if (isRendered) return;
 		const startButton = document.createElement("button");
 		startButton.classList.add("start-reset", "start");
@@ -294,7 +364,7 @@ const gameManager = (() => {
 		isRendered = true;
 	}
 
-	return { renderUI };
+	return { renderStart };
 })();
 
-gameManager.renderUI();
+gameManager.renderStart();
