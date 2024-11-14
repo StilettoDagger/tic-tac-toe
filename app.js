@@ -203,8 +203,8 @@ const gameManager = (() => {
 	const board = GameBoard();
 	let firstPlayer;
 	let secondPlayer;
-	let firstPlayerSymbol;
-	let secondPlayerSymbol;
+	let firstPlayerData = {};
+	let secondPlayerData = {};
 	const turnInfo = document.querySelector(".turn-info");
 	const currentTurnInfo = document.querySelector(".current-turn");
 	const resultInfo = document.querySelector(".result");
@@ -219,29 +219,31 @@ const gameManager = (() => {
 	 */
 	const initGame = () => {
 		pickRandomSymbols();
+
 		
-		firstPlayer = Player("Player 1", firstPlayerSymbol);
-		secondPlayer = Player("Player 2", secondPlayerSymbol);
-
+		firstPlayer = Player(firstPlayerData.name, firstPlayerData.symbol);
+		secondPlayer = Player(secondPlayerData.name, secondPlayerData.symbol);
+		
 		isPlayerTurn = Math.random() > 0.5;
-
+		
 		turnInfo.classList.remove("hidden");
 		playerInfo.classList.remove("hidden");
 		resultInfo.classList.add("hidden");
-
+		
 		showCurrentTurn();
 	}
-
+	
 	/**
 	 * Event handler function for starting and initializing the game. 
-	 */
+	*/
 	const startGame = (e) => {
 		e.target.textContent = "Reset Game";
 		e.target.classList.replace("start", "reset");
 		e.target.addEventListener("click", resetGame);
 		board.createBoard();
         cells = document.querySelectorAll(".cell");
-
+		
+		getPlayersNames();
 		initGame();
 
 		bindEventsToCells(cells);
@@ -291,12 +293,12 @@ const gameManager = (() => {
 			playerInfo.classList.add("hidden");
 			resultInfo.classList.remove("hidden", "win", "loss", "tie");
 
-			if (winner === "Player 1")
+			if (winner === firstPlayerData.name)
 			{
 				resultInfo.classList.add("win");
 				resultInfo.textContent = "You have won!";
 			}
-			else if (winner === "Player 2")
+			else if (winner === secondPlayerData.name)
 			{
 				resultInfo.classList.add("loss");
 				resultInfo.textContent = "You have lost!";
@@ -312,19 +314,19 @@ const gameManager = (() => {
 	const pickRandomSymbols = () => {
 		if (Math.random() > 0.5)
 		{
-			firstPlayerSymbol = SYMBOLS[0];
-			secondPlayerSymbol = SYMBOLS[1];
+			firstPlayerData.symbol = SYMBOLS[0];
+			secondPlayerData.symbol = SYMBOLS[1];
 		}
 		else {
-			firstPlayerSymbol = SYMBOLS[1];
-			secondPlayerSymbol = SYMBOLS[0];
+			firstPlayerData.symbol = SYMBOLS[1];
+			secondPlayerData.symbol = SYMBOLS[0];
 		}
 
 		const symbolInfo = playerInfo.querySelector(".symbol");
-		const symbolClass = firstPlayerSymbol === "X" ? "red" : "blue";
+		const symbolClass = firstPlayerData.symbol === "X" ? "red" : "blue";
 		symbolInfo.classList.remove("red", "blue");
 		symbolInfo.classList.add(symbolClass);
-		symbolInfo.textContent = firstPlayerSymbol;
+		symbolInfo.textContent = firstPlayerData.symbol;
 	};
 
 	const showCurrentTurn = () => {
@@ -336,6 +338,21 @@ const gameManager = (() => {
 			currentTurnInfo.textContent = "your opponent's turn";
 		}
 	};
+
+	/**
+	 * Get the custom names of players from the input fields, 
+	 * then remove the inputs from the DOM.
+	 */
+	const getPlayersNames = () => {
+		const userName = document.getElementById("user-name").value.trim();
+		const otherName = document.getElementById("other-name").value.trim();
+
+		firstPlayerData.name = userName || "Player 1";
+		secondPlayerData.name = otherName || "Player 2";
+
+		// Remove player inputs
+		document.getElementById("name-inputs").remove();
+	}
 
 	/**
 	 * Event handler function for resetting the game.
