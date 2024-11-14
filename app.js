@@ -4,6 +4,7 @@ const GameBoard = () => {
 
 	// Create a 3x3 2D array initially filled with null values and add the cells to the DOM
 	const createBoard = () => {
+		boardContainer.classList.remove("hidden");
 		for (let i = 0; i < 3; i++) {
 			gameBoard.push([]);
 			const newRow = document.createElement("div");
@@ -65,7 +66,6 @@ const GameBoard = () => {
 					gameBoard[i][0].playerSymbol === gameBoard[i][1].playerSymbol &&
 					gameBoard[i][1].playerSymbol === gameBoard[i][2].playerSymbol
 				) {
-                    console.log("game over");
                     
 					return gameBoard[i][0].playerName;
 				}
@@ -77,7 +77,6 @@ const GameBoard = () => {
 					gameBoard[0][i].playerSymbol === gameBoard[1][i].playerSymbol &&
 					gameBoard[1][i].playerSymbol === gameBoard[2][i].playerSymbol
 				) {
-                    console.log("game over");
 					return gameBoard[0][i].playerName;
 				}
 			}
@@ -90,7 +89,6 @@ const GameBoard = () => {
 				(gameBoard[0][0].playerSymbol === gameBoard[1][1].playerSymbol &&
 					gameBoard[1][1].playerSymbol === gameBoard[2][2].playerSymbol)
 			) {
-                console.log("game over");
 				return gameBoard[1][1].playerName;
 			}
         }
@@ -101,7 +99,6 @@ const GameBoard = () => {
 				(gameBoard[0][2].playerSymbol === gameBoard[1][1].playerSymbol &&
 					gameBoard[1][1].playerSymbol === gameBoard[2][0].playerSymbol)
 			) {
-                console.log("game over");
 				return gameBoard[1][1].playerName;
 			}
         }
@@ -113,7 +110,30 @@ const GameBoard = () => {
 		return;
 	};
 
-	return { createBoard, fillCell };
+	const clearDOMCells = () => {
+		const cells = document.querySelectorAll(".cell");
+
+		cells.forEach(cell => {
+			cell.classList.remove("red", "blue", "active");
+		})
+	};
+
+	const clearBoardData = () => {
+		for (let i = 0; i < 3; i++)
+		{
+			for (let j = 0; j < 3; j++)
+			{
+				gameBoard[i][j] = null;
+			}
+		}
+	}
+
+	const resetBoard = () => {
+		clearDOMCells();
+		clearBoardData();
+	}
+
+	return { createBoard, fillCell, resetBoard };
 };
 
 const Player = (name, symbol) => {
@@ -139,24 +159,35 @@ const gameManager = (() => {
 	const currentTurnInfo = document.querySelector(".current-turn");
 	const resultInfo = document.querySelector(".result");
 	const playerInfo = document.querySelector(".player-info");
-	let isPlayerTurn = Math.random() > 0.5 ? true: false;
+	let isPlayerTurn;
     let cells;
-
-	const startGame = () => {
-		board.createBoard();
-
+	let isGameOver = false;
+	let isRendered = false;
+	
+	const initGame = () => {
 		pickRandomSymbols();
-
+		
 		firstPlayer = Player("Player 1", firstPlayerSymbol);
 		secondPlayer = Player("Player 2", secondPlayerSymbol);
+
+		isPlayerTurn = Math.random() > 0.5;
 
 		turnInfo.classList.remove("hidden");
 		playerInfo.classList.remove("hidden");
 		resultInfo.classList.add("hidden");
 
 		showCurrentTurn();
+	}
 
+	const startGame = (e) => {
+		e.target.textContent = "Reset Game";
+		e.target.classList.replace("start", "reset");
+		e.target.addEventListener("click", resetGame);
+		board.createBoard();
         cells = document.querySelectorAll(".cell");
+
+		initGame();
+
 		bindEventsToCells(cells);
 	};
 
@@ -190,12 +221,11 @@ const gameManager = (() => {
 	const checkGameOver = (winner) => {
 		if (winner)
 		{
-			console.log(winner);
-			
+			isGameOver = true;
 			unbindCells(cells);
 			turnInfo.classList.add("hidden");
 			playerInfo.classList.add("hidden");
-			resultInfo.classList.remove("hidden");
+			resultInfo.classList.remove("hidden", "win", "loss", "tie");
 
 			if (winner === "Player 1")
 			{
@@ -205,12 +235,12 @@ const gameManager = (() => {
 			else if (winner === "Player 2")
 			{
 				resultInfo.classList.add("loss");
-				resultInfo.textContent = "You have lost!"
+				resultInfo.textContent = "You have lost!";
 			}
 			else if (winner === "tie")
 			{
 				resultInfo.classList.add("tie");
-				resultInfo.textContent = "It's a tie!"
+				resultInfo.textContent = "It's a tie!";
 			}
 		}
 	}
@@ -228,6 +258,7 @@ const gameManager = (() => {
 
 		const symbolInfo = playerInfo.querySelector(".symbol");
 		const symbolClass = firstPlayerSymbol === "X" ? "red" : "blue";
+		symbolInfo.classList.remove("red", "blue");
 		symbolInfo.classList.add(symbolClass);
 		symbolInfo.textContent = firstPlayerSymbol;
 	};
@@ -242,7 +273,28 @@ const gameManager = (() => {
 		}
 	};
 
-	return { startGame };
+	const resetGame = (e) => {
+		
+		if (isGameOver)
+		{
+			bindEventsToCells(cells);
+			isGameOver = false;
+		}
+		board.resetBoard();
+		initGame();
+	}
+
+	const renderUI = () => {
+		if (isRendered) return;
+		const startButton = document.createElement("button");
+		startButton.classList.add("start-reset", "start");
+		startButton.textContent = "Start Game"
+		startButton.addEventListener("click", startGame, {once: true});
+		document.body.appendChild(startButton);
+		isRendered = true;
+	}
+
+	return { renderUI };
 })();
 
-gameManager.startGame();
+gameManager.renderUI();

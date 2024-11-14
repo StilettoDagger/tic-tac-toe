@@ -85,6 +85,10 @@ p {
     height: 500px;
 }
 
+#board.hidden {
+    display: none;
+}
+
 #board > .row {
     display: flex;
     width: 100%;
@@ -140,4 +144,34 @@ p {
     background: url(assets/x.png);
     background-position: 55% 60%;
     background-repeat: no-repeat;
+}
+
+button.start-reset {
+    font: inherit;
+    font-size: 1.8rem;
+    margin: auto;
+    color: #e2e3e4;
+    border: none;
+    font-weight: bold;
+    border-radius: 15px;
+    cursor: pointer;
+    padding: 0.3em 0.6em;
+    transition: background-color 100ms;
+}
+
+button.start-reset.start {
+    background-color: green;
+    font-size: 3rem;
+}
+
+button.start-reset.start:hover {
+    background-color: #005a00;
+}
+
+button.start-reset.reset {
+    background-color: #0f2edc;
+}
+
+button.start-reset.reset:hover {
+    background-color: #0b23a5;
 }
