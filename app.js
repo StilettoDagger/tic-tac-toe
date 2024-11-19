@@ -182,16 +182,72 @@ const GameBoard = () => {
  * @returns a Player object with addScore and playMove methods.
  */
 const Player = (name, symbol) => {
-	const playerName = name;
-	const playerSymbol = symbol;
-
+	let playerName = name;
+	let playerSymbol = symbol;
+	
 	let playerScore = 0;
 
-	const addScore = () => ++playerScore;
 	const playMove = (row, col) => ({ playerName, playerSymbol, row, col });
+	const addScore = () => ++playerScore;
+	const getName = () => playerName;
+	const getSymbol = () => playerSymbol;
+	const setName = (newName) => {
+		playerName = newName;
+	};
+	const setSymbol = (newSymbol) => {
+		playerSymbol = newSymbol;
+	};
 
-	return { addScore, playMove };
+	return { playMove, addScore, getName, getSymbol, setName, setSymbol };
 };
+
+const ScoreManager = (firstPlayer, secondPlayer) => {
+
+	const scores = document.querySelectorAll(".scores");
+
+	const firstScoreEl = document.querySelector(".first-score");
+	const secondScoreEl = document.querySelector(".second-score");
+
+	const addPlayerScore = (player) => {
+		let newScore;
+		if (player === firstPlayer)
+		{
+			newScore = firstPlayer.addScore();
+		}
+		else if (player === secondPlayer)
+		{
+			newScore = secondPlayer.addScore();
+		}
+		updateScores(player, newScore);
+	}
+
+	const updateScores = (player, score) => {
+		if (player === firstPlayer)
+		{
+			firstScoreEl.querySelector(".score-info .score-counter").textContent = score;
+		}
+		else if (player === secondPlayer)
+		{
+			secondScoreEl.querySelector(".score-info .score-counter").textContent = score;
+		}
+	}
+
+	const initScoresInfo = () => {
+		showScores();
+
+		firstScoreEl.querySelector(".score-name").textContent = firstPlayer.getName() + " (You)";
+		secondScoreEl.querySelector(".score-name").textContent = secondPlayer.getName() + " (Opponent)";
+
+	}
+
+	const showScores = () => {
+		scores.forEach(score => {
+			score.classList.add("shown");
+		});
+	}
+
+	return {initScoresInfo, addPlayerScore };
+}
 
 /**
  * Create an Immediately Invoked Function Expression (IIFE) object 
@@ -203,8 +259,7 @@ const gameManager = (() => {
 	const board = GameBoard();
 	let firstPlayer;
 	let secondPlayer;
-	let firstPlayerData = {};
-	let secondPlayerData = {};
+	let scoreManager;
 	const turnInfo = document.querySelector(".turn-info");
 	const currentTurnInfo = document.querySelector(".current-turn");
 	const resultInfo = document.querySelector(".result");
@@ -219,10 +274,7 @@ const gameManager = (() => {
 	 */
 	const initGame = () => {
 		pickRandomSymbols();
-
-		
-		firstPlayer = Player(firstPlayerData.name, firstPlayerData.symbol);
-		secondPlayer = Player(secondPlayerData.name, secondPlayerData.symbol);
+		scoreManager.initScoresInfo();
 		
 		isPlayerTurn = Math.random() > 0.5;
 		
@@ -237,13 +289,18 @@ const gameManager = (() => {
 	 * Event handler function for starting and initializing the game. 
 	*/
 	const startGame = (e) => {
-		e.target.textContent = "Reset Game";
+		e.target.textContent = "Reset Board";
 		e.target.classList.replace("start", "reset");
 		e.target.addEventListener("click", resetGame);
+		document.querySelector(".main").classList.toggle("active");
 		board.createBoard();
         cells = document.querySelectorAll(".cell");
 		
-		getPlayersNames();
+		const [firstName, secondName] = getPlayersNames();
+		
+		firstPlayer = Player(firstName, "X");
+		secondPlayer = Player(secondName, "O");
+		scoreManager = ScoreManager(firstPlayer, secondPlayer);
 		initGame();
 
 		bindEventsToCells(cells);
@@ -293,15 +350,17 @@ const gameManager = (() => {
 			playerInfo.classList.add("hidden");
 			resultInfo.classList.remove("hidden", "win", "loss", "tie");
 
-			if (winner === firstPlayerData.name)
+			if (winner === firstPlayer.getName())
 			{
 				resultInfo.classList.add("win");
 				resultInfo.textContent = "You have won!";
+				scoreManager.addPlayerScore(firstPlayer);
 			}
-			else if (winner === secondPlayerData.name)
+			else if (winner === secondPlayer.getName())
 			{
 				resultInfo.classList.add("loss");
 				resultInfo.textContent = "You have lost!";
+				scoreManager.addPlayerScore(secondPlayer);
 			}
 			else if (winner === "tie")
 			{
@@ -314,28 +373,30 @@ const gameManager = (() => {
 	const pickRandomSymbols = () => {
 		if (Math.random() > 0.5)
 		{
-			firstPlayerData.symbol = SYMBOLS[0];
-			secondPlayerData.symbol = SYMBOLS[1];
+			firstPlayer.setSymbol(SYMBOLS[0])
+			secondPlayer.setSymbol(SYMBOLS[1]);
 		}
 		else {
-			firstPlayerData.symbol = SYMBOLS[1];
-			secondPlayerData.symbol = SYMBOLS[0];
+			firstPlayer.setSymbol(SYMBOLS[1]);
+			secondPlayer.setSymbol(SYMBOLS[0]);
 		}
 
 		const symbolInfo = playerInfo.querySelector(".symbol");
-		const symbolClass = firstPlayerData.symbol === "X" ? "red" : "blue";
+		const symbolClass = firstPlayer.getSymbol() === "X" ? "red" : "blue";
 		symbolInfo.classList.remove("red", "blue");
 		symbolInfo.classList.add(symbolClass);
-		symbolInfo.textContent = firstPlayerData.symbol;
+		symbolInfo.textContent = firstPlayer.getSymbol();
 	};
 
 	const showCurrentTurn = () => {
 		if (isPlayerTurn)
 		{
-			currentTurnInfo.textContent = "your turn";
+			currentTurnInfo.textContent = `${firstPlayer.getName()}'s turn.`;
+			currentTurnInfo.classList.replace("red", "green");
 		}
 		else {
-			currentTurnInfo.textContent = "your opponent's turn";
+			currentTurnInfo.textContent = `${secondPlayer.getName()}'s turn.`;
+			currentTurnInfo.classList.replace("green", "red");
 		}
 	};
 
@@ -347,11 +408,13 @@ const gameManager = (() => {
 		const userName = document.getElementById("user-name").value.trim();
 		const otherName = document.getElementById("other-name").value.trim();
 
-		firstPlayerData.name = userName || "Player 1";
-		secondPlayerData.name = otherName || "Player 2";
+		const firstName = userName || "Player 1";
+		const secondName = otherName || "Player 2";
 
 		// Remove player inputs
 		document.getElementById("name-inputs").remove();
+
+		return [firstName, secondName];
 	}
 
 	/**
@@ -377,7 +440,7 @@ const gameManager = (() => {
 		startButton.classList.add("start-reset", "start");
 		startButton.textContent = "Start Game"
 		startButton.addEventListener("click", startGame, {once: true});
-		document.body.appendChild(startButton);
+		document.querySelector(".main").appendChild(startButton);
 		isRendered = true;
 	}
 

@@ -4,12 +4,18 @@
 
 body {
     margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 400px 1fr 400px;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: 'title title title'
+                        'firstScore main secondScore'
+                        'firstScore main secondScore' 
+                        'firstScore main secondScore';
+    column-gap: 1em;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     --outline-color: #62686e;
+    background-color: #f2faff;
+
 }
 
 body, html {
@@ -17,8 +23,63 @@ body, html {
 }
 
 .title {
+    grid-area: title;
     text-align: center;
     font-size: 2.5rem;
+    margin-bottom: 0;
+    padding-bottom: 1em;
+    border-bottom: 1px solid #bbb;
+}
+
+.main {
+    grid-area: main;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 0.5em;
+
+}
+
+.main.active {
+    border-left: 1px solid #bbb;
+    border-right: 1px solid #bbb;
+}
+
+.scores {
+    font-size: 1.5rem;
+    text-align: center;
+    display: none;
+    border: 1px solid black;
+    align-self: start;
+    padding-bottom: 1em;
+    border-radius: 20px;
+    font-weight: bold;
+    margin-top: 1em;
+    color: #f6f6f6;
+}
+
+.scores.shown {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.first-score {
+    grid-area: firstScore;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left: none;
+    box-shadow: 2px 4px 10px rgb(120, 120, 120, 0.5);
+    background-color: green;
+}
+
+.second-score {
+    grid-area: secondScore;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: none;
+    box-shadow: -2px 4px 10px rgb(120, 120, 120, 0.5);
+    background-color: darkred;
 }
 
 .game-info {
@@ -56,6 +117,14 @@ p {
 
 .symbol.blue {
     color: blue;
+}
+
+.current-turn.green {
+    color: green;
+}
+
+.current-turn.red {
+    color: red;
 }
 
 .result {
@@ -170,7 +239,6 @@ p {
 .name-field > label {
     font-weight: bold;
     text-align: center;
-    font-size: 1.5rem;
 }
 
 .name-field > input[type="text"]
@@ -192,7 +260,6 @@ button.start-reset {
     color: #e2e3e4;
     border: none;
     margin-bottom: 2em;
-    box-shadow: 0 0.2em 0 darkgreen;
     font-weight: bold;
     border-radius: 50px;
     cursor: pointer;
@@ -200,13 +267,17 @@ button.start-reset {
     transition: background-color 100ms;
 }
 
-button.start-reset:active {
+button.start-reset.start:active {
     box-shadow: inset 0 0 10px rgb(120, 120, 120, 0.5), 0 0.1em 0 darkgreen;
+}
+
+button.start-reset:active {
     transform: scale(0.98);
     transform: translateY(0.1em);
 }
 
 button.start-reset.start {
+    box-shadow: 0 0.2em 0 darkgreen;
     background-color: green;
     font-size: 3rem;
 }
@@ -216,10 +287,15 @@ button.start-reset.start:hover {
 }
 
 button.start-reset.reset {
+    box-shadow: 0 0.2em 0 #061252;
     background-color: #0f2edc;
     margin: auto;
 }
 
 button.start-reset.reset:hover {
     background-color: #0b23a5;
+}
+
+button.start-reset.reset:active {
+    box-shadow: inset 0 0 10px rgb(120, 120, 120, 0.5), 0 0.1em 0 #061252;
 }

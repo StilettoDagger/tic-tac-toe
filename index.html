@@ -9,20 +9,38 @@
 </head>
 <body>
     <h1 class="title">Tic Tac Toe</h1>
-    <div class="game-info">
-        <p class="player-info hidden">You are playing as: <span class="symbol"></span></p>
-        <p class="turn-info hidden">It is now <span class="current-turn"></span>.</p>
-        <p class="result hidden"></p>
-    </div>
-    <div class="hidden" id="board"></div>
-    <div id="name-inputs">
-        <div class="name-field">
-            <label for="user-name">Enter your name: </label>
-            <input type="text" name="userName" id="user-name" placeholder="Player 1">
+    <div class="scores first-score">
+        <div class="score-title">
+            <h2 class="score-name"></h2>
         </div>
-        <div class="name-field">
-            <label for="other-name">Enter the other player's name: </label>
-            <input type="text" name="otherName" id="other-name" placeholder="Player 2">
+        <div class="score-info">
+            <p>Score: <span class="score-counter">0</span></p>
+        </div>
+    </div>
+    <div class="scores second-score">
+        <div class="score-title">
+            <h2 class="score-name"></h2>
+        </div>
+        <div class="score-info">
+            <p>Score: <span class="score-counter">0</span></p>
+        </div>
+    </div>
+    <div class="main">
+        <div class="game-info">
+            <p class="player-info hidden">You are playing as: <span class="symbol"></span></p>
+            <p class="turn-info hidden">It is now <span class="current-turn green"></span></p>
+            <p class="result hidden"></p>
+        </div>
+        <div class="hidden" id="board"></div>
+        <div id="name-inputs">
+            <div class="name-field">
+                <label for="user-name">Enter your name: </label>
+                <input type="text" name="userName" id="user-name" placeholder="Player 1">
+            </div>
+            <div class="name-field">
+                <label for="other-name">Enter your opponent's name: </label>
+                <input type="text" name="otherName" id="other-name" placeholder="Player 2">
+            </div>
         </div>
     </div>
 </body>
